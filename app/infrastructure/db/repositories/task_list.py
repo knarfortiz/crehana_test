@@ -20,16 +20,11 @@ class TaskListRepository(ITaskListRepository):
     def get_by_id(self, list_id: int) -> Optional[TaskList]:
         return self.session.get(TaskList, list_id)
 
-    def get_all_with_tasks_and_users(self) -> List[TaskList]:
+    def get_all(self) -> List[TaskList]:
         statement = select(TaskList).options(
-            selectinload(TaskList.tasks).selectinload(
-                Task.assigned_to
-            )  # 👈 carga usuarios asignados
+            selectinload(TaskList.tasks).selectinload(Task.assigned_to)
         )
         return self.session.exec(statement).all()
-
-    def get_all(self) -> List[TaskList]:
-        return self.session.exec(select(TaskList)).all()
 
     def update(self, task_list: TaskList) -> TaskList:
         existing_task_list = self.get_by_id(task_list.id)

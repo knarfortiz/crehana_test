@@ -17,7 +17,7 @@ class TaskListQueries:
     @strawberry.field
     def tasks_list(self, info: Info) -> List[TaskListType]:
         task_list_repo = get_task_list_repository(info)
-        db_task_lists = task_list_repo.get_all_with_tasks_and_users()
+        db_task_lists = task_list_repo.get_all()
 
         result = []
 
