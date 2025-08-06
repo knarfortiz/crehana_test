@@ -43,5 +43,5 @@ source = ["app"]
 
 [tool.coverage.report]
 show_missing = "true"  
-omit = ["app/tests/*", "*/__init__.py"]
+omit = ["tests/*", "*/__init__.py"]
 fail_under = 85

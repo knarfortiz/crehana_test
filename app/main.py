@@ -1,8 +1,10 @@
 from fastapi import FastAPI
+from strawberry.fastapi import GraphQLRouter
 
-app = FastAPI()
+from app.graphql.schema import schema
 
+graphql_app = GraphQLRouter(schema)
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+app = FastAPI(title="Todo API con GraphQL")
+
+app.include_router(graphql_app, prefix="/graphql")
