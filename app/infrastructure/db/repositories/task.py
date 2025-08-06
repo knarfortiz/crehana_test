@@ -46,6 +46,3 @@ class TaskRepository(ITaskRepository):
         self.session.refresh(task)
         return task
 
-    def get_task_by_list_id(self, list_id: int) -> List[Task]:
-        statement = select(Task).where(Task.task_list_id == list_id)
-        return self.session.exec(statement).all()

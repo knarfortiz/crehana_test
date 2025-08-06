@@ -18,6 +18,3 @@ class ITaskRepository(ABC):
 
     @abstractmethod
     def create(self, task: Task) -> Task: ...
-
-    @abstractmethod
-    def get_task_by_list_id(self, list_id: int) -> List[Task]: ...
