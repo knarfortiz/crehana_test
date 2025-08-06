@@ -5,6 +5,5 @@ from app.graphql.schema import schema
 
 graphql_app = GraphQLRouter(schema)
 
-app = FastAPI(title="Todo API con GraphQL")
-
+app = FastAPI(title="ToDo API con GraphQL")
 app.include_router(graphql_app, prefix="/graphql")
