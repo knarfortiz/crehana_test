@@ -1,9 +1,10 @@
 from typing import List, Optional
 
+from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
 
 from app.domain.repositories.task_list import ITaskListRepository
-from app.infrastructure.db.models.task import TaskList
+from app.infrastructure.db.models.task import Task, TaskList
 
 
 class TaskListRepository(ITaskListRepository):
@@ -18,6 +19,14 @@ class TaskListRepository(ITaskListRepository):
 
     def get_by_id(self, list_id: int) -> Optional[TaskList]:
         return self.session.get(TaskList, list_id)
+
+    def get_all_with_tasks_and_users(self) -> List[TaskList]:
+        statement = select(TaskList).options(
+            selectinload(TaskList.tasks).selectinload(
+                Task.assigned_to
+            )  # 👈 carga usuarios asignados
+        )
+        return self.session.exec(statement).all()
 
     def get_all(self) -> List[TaskList]:
         return self.session.exec(select(TaskList)).all()
