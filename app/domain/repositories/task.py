@@ -9,7 +9,12 @@ class ITaskRepository(ABC):
     def get_all(self) -> List[Task]: ...
 
     @abstractmethod
-    def get_by_id(self, task_id: int) -> Optional[Task]: ...
+    def get_by_task_list_with_filters(
+        self,
+        list_id: int,
+        status: Optional[str] = None,
+        priority: Optional[str] = None,
+    ) -> List[Task]: ...
 
     @abstractmethod
     def create(self, task: Task) -> Task: ...

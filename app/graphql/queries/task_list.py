@@ -76,7 +76,7 @@ class TaskListQueries:
                     status=TaskStatus(task.status),
                     priority=TaskPriority(task.priority),
                     assigned_to=user_type,
-                    task_list=None,  # evitar ciclos
+                    task_list=None,
                 )
             )
 

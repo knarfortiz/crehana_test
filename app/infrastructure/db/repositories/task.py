@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
 
 from app.domain.repositories.task import ITaskRepository
@@ -11,10 +12,33 @@ class TaskRepository(ITaskRepository):
         self.session = session
 
     def get_all(self) -> List[Task]:
-        return self.session.exec(select(Task)).all()
+        statement = select(Task).options(
+            selectinload(Task.assigned_to),
+            selectinload(Task.task_list),
+        )
+        return self.session.exec(statement).all()
 
-    def get_by_id(self, task_id: int) -> Optional[Task]:
-        return self.session.get(Task, task_id)
+    def get_by_task_list_with_filters(
+        self,
+        list_id: int,
+        status: Optional[str] = None,
+        priority: Optional[str] = None,
+    ) -> List[Task]:
+        statement = (
+            select(Task)
+            .where(Task.task_list_id == list_id)
+            .options(
+                selectinload(Task.assigned_to),
+                selectinload(Task.task_list),
+            )
+        )
+
+        if status:
+            statement = statement.where(Task.status == status)
+        if priority:
+            statement = statement.where(Task.priority == priority)
+
+        return self.session.exec(statement).all()
 
     def create(self, task: Task) -> Task:
         self.session.add(task)
