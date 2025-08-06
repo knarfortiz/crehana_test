@@ -12,11 +12,19 @@ class TaskStatus(Enum):
     in_progress = "in_progress"
     completed = "completed"
 
+
 @strawberry.enum
 class TaskPriority(Enum):
     low = "low"
     medium = "medium"
     high = "high"
+
+
+@strawberry.type
+class TaskListType:
+    id: int
+    name: str
+
 
 @strawberry.type
 class TaskType:
@@ -26,5 +34,5 @@ class TaskType:
     is_done: bool
     status: TaskStatus
     priority: TaskPriority
-    list_id: int
     assigned_to: Optional[UserType]
+    task_list: Optional[TaskListType]

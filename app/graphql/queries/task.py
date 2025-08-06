@@ -5,7 +5,8 @@ from sqlmodel import Session
 from strawberry.types import Info
 
 from app.graphql.types import TaskPriority, TaskStatus, TaskType
-from app.infrastructure.db.repositories import get_all_tasks
+from app.infrastructure.db.repositories.task import get_all_tasks
+from app.infrastructure.db.repositories.user import get_user_by_id
 
 
 @strawberry.type
@@ -24,8 +25,12 @@ class TaskQueries:
                 is_done=task.is_done,
                 status=TaskStatus(task.status),
                 priority=TaskPriority(task.priority),
-                list_id=task.list_id,
-                assigned_to=None  # aún no usamos usuarios
+                task_list=None,
+                assigned_to=(
+                    get_user_by_id(session, task.assigned_to_id)
+                    if task.assigned_to_id
+                    else None
+                ),
             )
             for task in db_tasks
         ]
