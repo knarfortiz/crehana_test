@@ -15,11 +15,11 @@ class TaskMutations:
         self,
         info: Info,
         title: str,
+        assigned_to_id: int,
+        task_list_id: int,
         description: Optional[str] = None,
         status: TaskStatus = TaskStatus.pending,
         priority: TaskPriority = TaskPriority.medium,
-        assigned_to_id: Optional[int] = None,
-        task_list_id: Optional[int] = None,
     ) -> TaskType:
         task_repo = get_task_repository(info)
         user_repo = get_user_repository(info)

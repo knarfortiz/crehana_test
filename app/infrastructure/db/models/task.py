@@ -13,8 +13,8 @@ class Task(SQLModel, table=True):
     is_done: bool = False
     status: str = "pending"
     priority: str = "medium"
-    task_list_id: Optional[int] = Field(default=None, foreign_key="tasklist.id")
-    assigned_to_id: Optional[int] = Field(default=None, foreign_key="user.id")
+    task_list_id: int = Field(foreign_key="tasklist.id")
+    assigned_to_id: int = Field(foreign_key="user.id")
 
     task_list: Optional["TaskList"] = Relationship(back_populates="tasks")
     assigned_to: Optional["User"] = Relationship(back_populates="tasks")
