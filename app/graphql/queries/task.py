@@ -5,7 +5,7 @@ from sqlmodel import Session
 from strawberry.types import Info
 
 from app.graphql.types import TaskPriority, TaskStatus, TaskType
-from app.infrastructure.db.repositories.task import get_all_tasks
+from app.graphql.utils import get_task_repository
 from app.infrastructure.db.repositories.user import get_user_by_id
 
 
@@ -14,8 +14,9 @@ class TaskQueries:
     @strawberry.field
     def tasks(self, info: Info) -> List[TaskType]:
         session: Session = info.context["session"]
+        task_repo = get_task_repository(info)
 
-        db_tasks = get_all_tasks(session)
+        db_tasks = task_repo.get_all()
 
         return [
             TaskType(
