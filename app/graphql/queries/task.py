@@ -3,7 +3,7 @@ from typing import List
 import strawberry
 from strawberry.types import Info
 
-from app.graphql.types import TaskPriority, TaskStatus, TaskType
+from app.graphql.types.task import TaskPriority, TaskStatus, TaskType
 from app.graphql.utils import get_task_repository, get_user_repository
 
 

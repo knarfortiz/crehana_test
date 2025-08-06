@@ -1,7 +1,7 @@
 import strawberry
 from strawberry.types import Info
 
-from app.graphql.types import UserType
+from app.graphql.types.user import UserType
 from app.graphql.utils import get_user_repository
 from app.infrastructure.db.models import User
 

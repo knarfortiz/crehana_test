@@ -3,8 +3,8 @@ from typing import Optional
 import strawberry
 from strawberry.types import Info
 
-from app.graphql.types import TaskPriority, TaskStatus, TaskType
-from app.graphql.types.task import TaskListType
+from app.graphql.types.task import TaskPriority, TaskStatus, TaskType
+from app.graphql.types.task_list import TaskListType
 from app.graphql.utils import get_task_repository, get_user_repository
 from app.infrastructure.db.models import Task, TaskList
 
@@ -37,10 +37,10 @@ class TaskMutations:
 
         task = task_repo.create_task(task)
 
-        assigned_user = (
-            user_repo.get_by_id(assigned_to_id) if assigned_to_id else None
+        assigned_user = user_repo.get_by_id(assigned_to_id) if assigned_to_id else None
+        task_list = (
+            task_repo.get_task_list_by_id(task_list_id) if task_list_id else None
         )
-        task_list = task_repo.get_task_list_by_id(task_list_id) if task_list_id else None
 
         return TaskType(
             id=task.id,
