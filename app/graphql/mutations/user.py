@@ -1,10 +1,9 @@
 import strawberry
-from sqlmodel import Session
 from strawberry.types import Info
 
 from app.graphql.types import UserType
+from app.graphql.utils import get_user_repository
 from app.infrastructure.db.models import User
-from app.infrastructure.db.repositories.user import create_user
 
 
 @strawberry.type
@@ -16,9 +15,9 @@ class UserMutations:
         username: str,
         email: str,
     ) -> UserType:
-        session: Session = info.context["session"]
+        user_repo = get_user_repository(info)
 
         user = User(username=username, email=email)
-        user = create_user(session, user)
+        user = user_repo.create(user)
 
         return UserType(id=user.id, username=user.username, email=user.email)

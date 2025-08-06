@@ -1,14 +1,12 @@
 from typing import Optional
 
 import strawberry
-from sqlmodel import Session
 from strawberry.types import Info
 
 from app.graphql.types import TaskPriority, TaskStatus, TaskType
 from app.graphql.types.task import TaskListType
-from app.graphql.utils import get_task_repository
+from app.graphql.utils import get_task_repository, get_user_repository
 from app.infrastructure.db.models import Task, TaskList
-from app.infrastructure.db.repositories.user import get_user_by_id
 
 
 @strawberry.type
@@ -24,8 +22,8 @@ class TaskMutations:
         assigned_to_id: Optional[int] = None,
         task_list_id: Optional[int] = None,
     ) -> TaskType:
-        session: Session = info.context["session"]
         task_repo = get_task_repository(info)
+        user_repo = get_user_repository(info)
 
         task = Task(
             title=title,
@@ -40,7 +38,7 @@ class TaskMutations:
         task = task_repo.create_task(task)
 
         assigned_user = (
-            get_user_by_id(session, assigned_to_id) if assigned_to_id else None
+            user_repo.get_by_id(assigned_to_id) if assigned_to_id else None
         )
         task_list = task_repo.get_task_list_by_id(task_list_id) if task_list_id else None
 

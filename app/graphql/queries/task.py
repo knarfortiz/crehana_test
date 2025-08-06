@@ -1,20 +1,18 @@
 from typing import List
 
 import strawberry
-from sqlmodel import Session
 from strawberry.types import Info
 
 from app.graphql.types import TaskPriority, TaskStatus, TaskType
-from app.graphql.utils import get_task_repository
-from app.infrastructure.db.repositories.user import get_user_by_id
+from app.graphql.utils import get_task_repository, get_user_repository
 
 
 @strawberry.type
 class TaskQueries:
     @strawberry.field
     def tasks(self, info: Info) -> List[TaskType]:
-        session: Session = info.context["session"]
         task_repo = get_task_repository(info)
+        user_repo = get_user_repository(info)
 
         db_tasks = task_repo.get_all()
 
@@ -28,7 +26,7 @@ class TaskQueries:
                 priority=TaskPriority(task.priority),
                 task_list=None,
                 assigned_to=(
-                    get_user_by_id(session, task.assigned_to_id)
+                    user_repo.get_by_id(task.assigned_to_id)
                     if task.assigned_to_id
                     else None
                 ),
