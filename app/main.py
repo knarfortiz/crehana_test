@@ -1,9 +1,23 @@
-from fastapi import FastAPI
+from contextlib import asynccontextmanager
+from typing import Any
+
+from fastapi import FastAPI, Request
 from strawberry.fastapi import GraphQLRouter
 
 from app.graphql.schema import schema
+from app.infrastructure.db.base import get_session, init_db
 
-graphql_app = GraphQLRouter(schema)
 
-app = FastAPI(title="ToDo API con GraphQL")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    yield
+
+app = FastAPI(title="ToDo API", lifespan=lifespan)
+
+async def get_context_dependency(request: Request) -> dict[str, Any]:
+    session = next(get_session())
+    return {"request": request, "session": session}
+
+graphql_app = GraphQLRouter(schema, context_getter=get_context_dependency)
 app.include_router(graphql_app, prefix="/graphql")
