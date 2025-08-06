@@ -49,3 +49,37 @@ class TaskListQueries:
             )
 
         return result
+
+    @strawberry.field
+    def task_list_by_id(self, info: Info, list_id: int) -> TaskListType:
+        task_list_repo = get_task_list_repository(info)
+        db_task_lists = task_list_repo.get_by_id(list_id)
+
+        if not db_task_lists:
+            return None
+
+        task_types = []
+        for task in db_task_lists.tasks:
+            user = task.assigned_to
+            user_type = (
+                UserType(id=user.id, username=user.username, email=user.email)
+                if user
+                else None
+            )
+
+            task_types.append(
+                TaskType(
+                    id=task.id,
+                    title=task.title,
+                    description=task.description,
+                    is_done=task.is_done,
+                    status=TaskStatus(task.status),
+                    priority=TaskPriority(task.priority),
+                    assigned_to=user_type,
+                    task_list=None,  # evitar ciclos
+                )
+            )
+
+        return TaskListType(
+            id=db_task_lists.id, name=db_task_lists.name, tasks=task_types
+        )
