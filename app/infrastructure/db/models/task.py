@@ -24,4 +24,7 @@ class TaskList(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str
 
-    tasks: List[Task] = Relationship(back_populates="task_list")
+    tasks: List[Task] = Relationship(
+        back_populates="task_list",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
+    )

@@ -45,7 +45,7 @@ class TaskListRepository(ITaskListRepository):
         return db_task_list
 
     def delete(self, list_id: int) -> None:
-        task_list = self.get_by_id(list_id)
+        task_list = self.session.get(TaskList, list_id)
         if task_list:
             self.session.delete(task_list)
             self.session.commit()
