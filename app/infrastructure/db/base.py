@@ -8,11 +8,8 @@ engine = create_engine(DATABASE_URL, echo=True)
 
 
 def get_session():
-    session = Session(engine)
-    try:
+    with Session(engine) as session:
         yield session
-    finally:
-        session.close()
 
 
 def init_db():

@@ -16,7 +16,7 @@ class TaskListMutations:
 
         task_list = task_list_repo.create(task_list)
 
-        return TaskListType(id=task_list.id, name=task_list.name)
+        return TaskListType(id=task_list.id, name=task_list.name, tasks=None)
 
     @strawberry.mutation
     def update_task_list(self, info: Info, id: int, name: str) -> TaskListType:

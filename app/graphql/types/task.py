@@ -14,8 +14,8 @@ class TaskUpdateInput(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     is_done: Optional[bool] = None
-    status: Optional[TaskStatus] = None
-    priority: Optional[TaskPriority] = None
+    status: Optional[str] = None
+    priority: Optional[str] = None
     assigned_to_id: Optional[int] = None
     task_list_id: Optional[int] = None
 
