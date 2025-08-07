@@ -4,6 +4,7 @@ from typing import Any
 from fastapi import FastAPI, Request
 from strawberry.fastapi import GraphQLRouter
 
+from app.config import settings
 from app.graphql.schema import schema
 from app.infrastructure.db.base import get_session, init_db
 
@@ -14,7 +15,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="ToDo API", lifespan=lifespan)
+app = FastAPI(title=settings.app_name, lifespan=lifespan)
 
 
 async def get_context_dependency(request: Request) -> dict[str, Any]:

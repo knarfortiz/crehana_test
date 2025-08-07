@@ -2,9 +2,11 @@ from datetime import datetime, timedelta, timezone
 
 from jose import JWTError, jwt
 
-SECRET_KEY = "supersecreto"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+from app.config import settings
+
+SECRET_KEY = settings.secret_key
+ALGORITHM = settings.algorithm
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
 
 
 def create_access_token(username: str, user_id: str, expires_delta: timedelta):

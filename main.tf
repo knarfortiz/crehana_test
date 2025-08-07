@@ -62,7 +62,11 @@ resource "docker_container" "fastapi" {
   env = [
     "SMTP_HOST=mailhog",
     "SMTP_PORT=1025",
-    "FROM_EMAIL=no-reply@miapp.local"
+    "FROM_EMAIL=no-reply@miapp.local",
+
+    "SECRET_KEY=supersecreto",
+    "ALGORITHM=HS256",
+    "ACCESS_TOKEN_EXPIRE_MINUTES=60"
   ]
 
   depends_on = [

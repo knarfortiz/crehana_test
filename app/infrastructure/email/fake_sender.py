@@ -1,9 +1,11 @@
 import smtplib
 from email.message import EmailMessage
 
-SMTP_HOST = "mailhog"
-SMTP_PORT = 1025
-FROM_EMAIL = "no-reply@miapp.local"
+from app.config import settings
+
+SMTP_HOST = settings.smtp_host
+SMTP_PORT = settings.smtp_port
+FROM_EMAIL = settings.from_email
 
 
 def send_login_notification(to_email: str, username: str):
