@@ -21,3 +21,6 @@ class UserRepository(IUserRepository):
         self.session.commit()
         self.session.refresh(user)
         return user
+
+    def get_by_email(self, email: str) -> Optional[User]:
+        return self.session.exec(select(User).where(User.email == email)).first()

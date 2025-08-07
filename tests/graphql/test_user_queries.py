@@ -7,7 +7,7 @@ session_fixture
 def test_get_users(client):
     user_query = """
     mutation {
-      createUser(username: "user_test", email: "user@test.com") {
+      createUser(username: "user_test", email: "user@test.com", password: "password") {
         id
       }
     }

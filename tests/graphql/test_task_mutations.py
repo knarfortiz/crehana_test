@@ -37,7 +37,7 @@ def test_create_task(client):
 def test_update_task(client):
     create_user_query = """
     mutation {
-      createUser(username: "testuser", email: "user@test.com") {
+      createUser(username: "testuser", email: "user@test.com", password: "password") {
         id
       }
     }
