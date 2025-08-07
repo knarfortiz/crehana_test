@@ -1,10 +1,13 @@
+from unittest.mock import patch
+
 from tests.config import client_fixture, session_fixture
 
 client_fixture
 session_fixture
 
 
-def test_login_user(client):
+@patch("app.graphql.mutations.user.send_login_notification")
+def test_login_user(mock_send_email, client):
     create_user_query = """
     mutation {
       createUser(username: "testuser", email: "user@test.com", password: "password") {
@@ -28,8 +31,11 @@ def test_login_user(client):
     assert "token" in data
     assert data["type"] == "Bearer"
 
+    mock_send_email.assert_called_once_with("user@test.com", "testuser")
 
-def test_me_user(client):
+
+@patch("app.graphql.mutations.user.send_login_notification")
+def test_me_user(mock_send_email, client):
     create_user_query = """
     mutation {
       createUser(username: "testuser", email: "user@test.com", password: "password") {
@@ -49,6 +55,8 @@ def test_me_user(client):
     """
     response = client.post("", json={"query": login_query})
     data = response.json()["data"]["login"]
+
+    mock_send_email.assert_called_once()
 
     token = data["token"]
 
