@@ -29,44 +29,29 @@ Este documento registra las decisiones técnicas clave tomadas durante el desarr
 - Evita el uso incorrecto de `__init__.py` para lógica de composición.
 
 **Estructura:**
-<br>graphql/
-<br>├── queries/
-<br>│ ├── task.py
-<br>│ └── user.py
-<br>├── mutations/
-<br>│ ├── task.py
-<br>│ └── user.py
-<br>├── query.py
-<br>├── mutation.py
-<br>└── schema.py
-<br>└── permissions.py PENDIENTE
-
+- **app/**: Código fuente principal
+  - **config.py**: Configuración general
+  - **domain/**: Lógica de negocio y repositorios
+  - **graphql/**: Esquemas y resolvers GraphQL
+  - **infrastructure/**: Integraciones externas (auth, db, email)
+- **tests/**: Pruebas automatizadas
+- **Makefile**: Comandos para gestión de infraestructura con Terraform (usando Docker)
+- **pyproject.toml**: Dependencias y configuración de Python
 
 ---
 
 ## 3. ✅ Tipos GraphQL separados por entidad
 
-**Decisión:** Crear tipos GraphQL separados en `graphql/types/`, uno por entidad, y exponerlos desde `__init__.py`.
+**Decisión:** Crear tipos GraphQL separados en `graphql/types/`, uno por entidad.
 
 **Motivación:**
 - Mejora la organización de los tipos.
-- Facilita el acceso desde los resolvers (`from app.graphql.types import TaskType`).
+- Facilita el acceso desde los resolvers mediante imports explícitos.
 - Permite escalar a más entidades sin perder claridad.
 
 ---
 
-## 4. ✅ Evitar lógica en `__init__.py`
-
-**Decisión:** No usar `__init__.py` para componer clases (`Query`, `Mutation`, etc.), y limitar su uso a exposición de tipos u objetos.
-
-**Motivación:**
-- Seguir buenas prácticas de Python.
-- Prevenir errores de imports circulares.
-- Mejorar el descubrimiento de código por parte de otros desarrolladores.
-
----
-
-## 5. ✅ Estructura del proyecto orientada a Clean Architecture
+## 4. ✅ Estructura del proyecto orientada a Clean Architecture
 
 **Decisión:** Organizar el código en carpetas: `domain/`, `application/`, `infrastructure/`, `graphql/`.
 
@@ -77,7 +62,7 @@ Este documento registra las decisiones técnicas clave tomadas durante el desarr
 
 ---
 
-## 6. ✅ Uso de SQLModel como ORM
+## 5. ✅ Uso de SQLModel como ORM
 
 **Decisión:** Utilizar `sqlmodel` en lugar de SQLAlchemy directamente.
 
@@ -89,7 +74,7 @@ Este documento registra las decisiones técnicas clave tomadas durante el desarr
 
 ---
 
-## 7. ✅ Estrategia de testing y estructura
+## 6. ✅ Estrategia de testing y estructura
 
 **Decisión:** Ubicar los tests fuera de `app/`, en una carpeta raíz `tests/`, usando `pytest`.
 
@@ -100,7 +85,7 @@ Este documento registra las decisiones técnicas clave tomadas durante el desarr
 
 ---
 
-## 8. ✅ Linting y formateo
+## 7. ✅ Linting y formateo
 
 **Decisión:** Usar:
 - `black` para formateo
@@ -114,7 +99,7 @@ Este documento registra las decisiones técnicas clave tomadas durante el desarr
 
 ---
 
-## 9. ✅ Uso de `uv` como gestor de paquetes
+## 8. ✅ Uso de `uv` como gestor de paquetes
 
 **Decisión:** Gestionar dependencias y entorno virtual con `uv`.
 
@@ -125,3 +110,80 @@ Este documento registra las decisiones técnicas clave tomadas durante el desarr
 
 ---
 
+## 9. ✅ Manejo de autenticación con JWT
+
+**Decisión:** Implementar autenticación con tokens JWT usando un servicio propio (`jwt_service.py`), protegido por permisos en GraphQL.
+
+**Motivación:**
+- Es una práctica común y escalable en APIs modernas.
+- Permite proteger resolvers GraphQL con `@strawberry.permission`.
+- El token incluye el `sub` como identificador del usuario.
+- Fácil de probar e integrar con clientes externos.
+
+---
+
+## 10. ✅ Hashing de contraseñas con `passlib`
+
+**Decisión:** Usar `passlib` y el algoritmo `bcrypt` para almacenar contraseñas de forma segura.
+
+**Motivación:**
+- Evita guardar contraseñas en texto plano.
+- `passlib` es una librería robusta y ampliamente adoptada.
+- Compatible con verificación posterior (`verify_password`) y hashing (`hash_password`) al registrar o loguear un usuario.
+
+---
+
+## 11. ✅ Protecciones con permisos personalizados
+
+**Decisión:** Implementar permisos en Strawberry con `IsAuthenticated` usando `@strawberry.permission`.
+
+**Motivación:**
+- Permite proteger resolvers sensibles como `me`, `users`, etc.
+- Utiliza el token JWT enviado en el header `Authorization`.
+- Permite extender fácilmente a permisos más específicos (`IsAdmin`, etc.).
+
+---
+
+## 12. ✅ Testing de GraphQL con JWT
+
+**Decisión:** Incluir tests para resolvers protegidos (`me`) usando autenticación real con JWT emitido en `login`.
+
+**Motivación:**
+- Asegura la validez del flujo completo: login → token → autorización → acceso a datos.
+- Permite detectar fallas de seguridad o integración.
+- Refuerza el enfoque "end-to-end" sobre resolvers críticos.
+
+---
+
+## 13. ✅ Gestión de infraestructura con Makefile + Terraform + Docker
+
+**Decisión:** Usar un `Makefile` que encapsula comandos de Terraform dentro de contenedores Docker.
+
+**Motivación:**
+- Evita depender de instalaciones locales de Terraform.
+- Reproducible y portable en cualquier sistema con Docker.
+- Mejora la DX al reducir errores por versiones o configuración local.
+
+---
+
+## 14. ✅ Uso de `terraform plan -out` para despliegues controlados
+
+**Decisión:** Utilizar `terraform plan -out=plan.tfplan` y `terraform apply plan.tfplan` para garantizar consistencia.
+
+**Motivación:**
+- Asegura que el plan ejecutado sea exactamente el que se revisó.
+- Elimina advertencias innecesarias al aplicar.
+- Buena práctica especialmente útil para ambientes productivos o CI/CD.
+
+---
+
+## 15. ✅ Limpieza del entorno con `make clean`
+
+**Decisión:** Agregar el comando `make clean` para eliminar archivos temporales como `plan.tfplan`.
+
+**Motivación:**
+- Evita archivos residuales en el repo o directorio de trabajo.
+- Mejora la higiene del entorno local.
+- Facilita reiniciar despliegues sin residuos del anterior.
+
+---
