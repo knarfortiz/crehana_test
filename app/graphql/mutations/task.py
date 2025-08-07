@@ -101,4 +101,5 @@ class TaskMutations:
             task_repo.delete(id)
             return True
         except ValueError as e:
-            return e
+            print(e)
+            return False

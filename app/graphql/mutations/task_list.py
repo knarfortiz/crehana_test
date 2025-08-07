@@ -37,4 +37,5 @@ class TaskListMutations:
             task_list_repo.delete(list_id)
             return True
         except ValueError as e:
-            return e
+            print(e)
+            return False
