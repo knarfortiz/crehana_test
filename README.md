@@ -17,6 +17,7 @@ El objetivo de esta evaluación es construir una API RESTful para un sistema de 
 ## Estructura del Proyecto
 
 - **app/**: Código fuente principal
+  - **main.py**: Punto de entrada de la app
   - **config.py**: Configuración general
   - **domain/**: Lógica de negocio y repositorios
   - **graphql/**: Esquemas y resolvers GraphQL

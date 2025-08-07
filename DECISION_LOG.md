@@ -30,6 +30,7 @@ Este documento registra las decisiones técnicas clave tomadas durante el desarr
 
 **Estructura:**
 - **app/**: Código fuente principal
+  - **main.py**: Punto de entrada de la app
   - **config.py**: Configuración general
   - **domain/**: Lógica de negocio y repositorios
   - **graphql/**: Esquemas y resolvers GraphQL
@@ -53,7 +54,7 @@ Este documento registra las decisiones técnicas clave tomadas durante el desarr
 
 ## 4. ✅ Estructura del proyecto orientada a Clean Architecture
 
-**Decisión:** Organizar el código en carpetas: `domain/`, `application/`, `infrastructure/`, `graphql/`.
+**Decisión:** Organizar el código en carpetas: `domain/`, `infrastructure/`, `graphql/`.
 
 **Motivación:**
 - Facilitar la separación de responsabilidades (SRP).
@@ -117,7 +118,7 @@ Este documento registra las decisiones técnicas clave tomadas durante el desarr
 **Motivación:**
 - Es una práctica común y escalable en APIs modernas.
 - Permite proteger resolvers GraphQL con `@strawberry.permission`.
-- El token incluye el `sub` como identificador del usuario.
+- El token incluye el `id`, `username` como identificador del usuario.
 - Fácil de probar e integrar con clientes externos.
 
 ---
@@ -216,3 +217,23 @@ Este documento registra las decisiones técnicas clave tomadas durante el desarr
 - Se incluyó `background_tasks` en la función `get_context_dependency()` utilizada por `GraphQLRouter`.
 - Dentro de la mutación `login`, se obtiene el objeto con `info.context["background_tasks"]` y se agrega la tarea de envío del correo con `add_task(...)`.
 - El correo se envía de manera asíncrona, luego de que el cliente recibe su token.
+
+---
+## 19. ✅ Uso de variables de entorno para configuración
+
+**Decisión:** Centralizar la configuración sensible y contextual del proyecto utilizando variables de entorno, gestionadas mediante `pydantic.BaseSettings`.
+
+**Motivación:**
+- Evita hardcodear valores sensibles (como claves secretas o direcciones de servidor).
+- Facilita la portabilidad entre entornos (desarrollo, testing, producción).
+- Se integra de forma natural con Docker, Terraform y herramientas de despliegue.
+- Mejora la seguridad, mantenibilidad y limpieza del código.
+
+**Variables empleadas destacadas:**
+- `SMTP_HOST`, `SMTP_PORT`, `FROM_EMAIL`: Configuración del servidor de correos.
+- `SECRET_KEY`, `ALGORITHM`, `ACCESS_TOKEN_EXPIRE_MINUTES`: Configuración de tokens JWT.
+- `DEBUG_DB`: Permite activar el modo de debug en base de datos.
+
+**Extras:**
+- Se provee un archivo `.env.example` para facilitar la reproducción del entorno.
+- En los tests, se aseguran las variables necesarias directamente vía código, evitando dependencia directa del `.env`.
