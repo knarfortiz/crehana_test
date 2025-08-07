@@ -62,3 +62,11 @@ class TaskRepository(ITaskRepository):
         self.session.commit()
         self.session.refresh(existing_task)
         return existing_task
+
+    def delete(self, task_id: int) -> None:
+        task = self.session.get(Task, task_id)
+        if not task:
+            raise ValueError("Task not found")
+
+        self.session.delete(task)
+        self.session.commit()

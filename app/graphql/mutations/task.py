@@ -89,3 +89,13 @@ class TaskMutations:
             assigned_to=None,
             task_list=None,
         )
+
+    @strawberry.mutation
+    def delete_task(self, info: Info, id: int) -> bool:
+        task_repo = get_task_repository(info)
+
+        try:
+            task_repo.delete(id)
+            return True
+        except ValueError as e:
+            return e

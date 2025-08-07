@@ -21,3 +21,6 @@ class ITaskRepository(ABC):
 
     @abstractmethod
     def update(self, task: Task) -> Task: ...
+
+    @abstractmethod
+    def delete(self, task_id: int) -> None: ...
