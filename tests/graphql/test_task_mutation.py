@@ -33,6 +33,7 @@ def test_create_task(client):
     assert data["status"] == "pending"
     assert data["isDone"] is False
 
+
 def test_update_task(client):
     create_user_query = """
     mutation {

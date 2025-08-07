@@ -23,7 +23,7 @@ dev = [
 
 [tool.black]
 line-length = 88
-target-version = ["py310"]
+target-version = ["py312"]
 
 [tool.isort]
 profile = "black"
@@ -36,6 +36,13 @@ line-length = 88
 
 [tool.ruff.lint]
 select = ["F", "N", "W", "I001", "I002"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-v --tb=short --disable-warnings"
+testpaths = ["tests"]
+python_files = "test_*.py"
+pythonpath = "."
 
 [tool.coverage.run]
 branch = "true"  
