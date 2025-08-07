@@ -8,6 +8,7 @@ from app.graphql.utils import get_user_repository
 from app.infrastructure.auth.jwt_service import create_access_token
 from app.infrastructure.auth.password_hasher import hash_password, verify_password
 from app.infrastructure.db.models import User
+from app.infrastructure.email.fake_sender import send_login_notification
 
 
 @strawberry.type
@@ -39,4 +40,7 @@ class UserMutations:
             raise Exception("Invalid username or password")
 
         token = create_access_token(user.username, user.id, timedelta(minutes=15))
+
+        send_login_notification(user.email, user.username)
+
         return UserTokenType(token=token)

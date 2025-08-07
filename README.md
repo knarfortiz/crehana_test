@@ -85,6 +85,7 @@ Para instalar el administrador de paquetes `uv`:
 2. Usa los comandos del `Makefile` para gestionar la infraestructura.
 3. Accede a la documentación interactiva en http://127.0.0.1:8000/docs
 4. Accede a la documentación interactiva en http://127.0.0.1:8000/graphql
+5. Accede a MailHog http://localhost:8025, para validar el correo de inicio de login
 
 ## Dependencias principales
 

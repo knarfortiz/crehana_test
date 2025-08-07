@@ -187,3 +187,17 @@ Este documento registra las decisiones técnicas clave tomadas durante el desarr
 - Facilita reiniciar despliegues sin residuos del anterior.
 
 ---
+## 16. ✅ Envío de notificación de inicio de sesión por correo con Mailhog
+
+**Decisión:** Utilizar Mailhog como servidor SMTP local para capturar y verificar correos durante el desarrollo. El correo se enviará como una notificación de inicio de sesión exitosa.
+
+**Motivación:**
+- Mailhog permite ver correos sin necesidad de servicios externos (Gmail, Mailgun, etc.).
+- Ideal para ambientes de desarrollo y pruebas.
+- Permite testear contenido, estructura y disparadores de correos.
+- Mejora la experiencia del usuario al recibir confirmación de acceso.
+
+**Implementación:**
+- Se utiliza `FastAPI` + `email.message.EmailMessage` + `smtplib`.
+- El servicio de envío se encapsula dentro de `infrastructure/email/mailer.py`.
+- Se activa después de una autenticación exitosa (`login`).
