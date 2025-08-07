@@ -139,3 +139,14 @@ def test_delete_task(client):
     delete_response = client.post("", json={"query": delete_query})
     assert delete_response.status_code == 200
     assert delete_response.json()["data"]["deleteTask"] is True
+
+
+def test_delete_non_existent_task(client):
+    delete_query = """
+    mutation {
+      deleteTask(id: 9999)
+    }
+    """
+    response = client.post("", json={"query": delete_query})
+    assert response.status_code == 200
+    assert response.json()["data"]["deleteTask"] is False

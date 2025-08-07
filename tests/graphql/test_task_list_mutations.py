@@ -75,3 +75,14 @@ def test_delete_task_list(client):
     delete_response = client.post("", json={"query": delete_query})
     assert delete_response.status_code == 200
     assert delete_response.json()["data"]["deleteTaskList"] is True
+
+
+def test_delete_non_existent_task_list(client):
+    delete_query = """
+    mutation {
+      deleteTaskList(listId: 9999)
+    }
+    """
+    response = client.post("", json={"query": delete_query})
+    assert response.status_code == 200
+    assert response.json()["data"]["deleteTaskList"] is False
