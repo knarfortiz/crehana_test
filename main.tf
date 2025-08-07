@@ -66,7 +66,9 @@ resource "docker_container" "fastapi" {
 
     "SECRET_KEY=supersecreto",
     "ALGORITHM=HS256",
-    "ACCESS_TOKEN_EXPIRE_MINUTES=60"
+    "ACCESS_TOKEN_EXPIRE_MINUTES=60",
+
+    "DEBUG_DB=False"
   ]
 
   depends_on = [
