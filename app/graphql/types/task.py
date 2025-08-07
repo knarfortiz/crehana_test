@@ -3,9 +3,21 @@ from __future__ import annotations
 from typing import Optional
 
 import strawberry
+from pydantic import BaseModel
 
 from app.graphql.types.enums import TaskPriority, TaskStatus
 from app.graphql.types.user import UserType
+
+
+class TaskUpdateInput(BaseModel):
+    id: int
+    title: Optional[str] = None
+    description: Optional[str] = None
+    is_done: Optional[bool] = None
+    status: Optional[TaskStatus] = None
+    priority: Optional[TaskPriority] = None
+    assigned_to_id: Optional[int] = None
+    task_list_id: Optional[int] = None
 
 
 @strawberry.type

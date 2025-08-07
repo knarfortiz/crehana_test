@@ -18,3 +18,6 @@ class ITaskRepository(ABC):
 
     @abstractmethod
     def create(self, task: Task) -> Task: ...
+
+    @abstractmethod
+    def update(self, task: Task) -> Task: ...

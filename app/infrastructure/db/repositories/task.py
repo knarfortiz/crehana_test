@@ -4,6 +4,7 @@ from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
 
 from app.domain.repositories.task import ITaskRepository
+from app.graphql.types.task import TaskUpdateInput
 from app.infrastructure.db.models.task import Task
 
 
@@ -46,3 +47,18 @@ class TaskRepository(ITaskRepository):
         self.session.refresh(task)
         return task
 
+    def update(self, task: TaskUpdateInput) -> Task:
+        existing_task = self.session.get(Task, task.id)
+        if not existing_task:
+            raise ValueError("Task not found")
+
+        updates = task.model_dump(exclude_unset=True)
+
+        for attr, value in updates.items():
+            if attr != "id" and value is not None:
+                setattr(existing_task, attr, value)
+
+        self.session.add(existing_task)
+        self.session.commit()
+        self.session.refresh(existing_task)
+        return existing_task
