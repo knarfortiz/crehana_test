@@ -42,6 +42,7 @@ docker-compose.*.yml
 crash.log
 terraform.tfvars
 terraform.tfvars.json
+plan.tfplan
 
 # Build / dist
 build/
