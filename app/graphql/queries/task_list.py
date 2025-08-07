@@ -51,7 +51,7 @@ class TaskListQueries:
         return result
 
     @strawberry.field
-    def task_list_by_id(self, info: Info, list_id: int) -> TaskListType:
+    def task_list_by_id(self, info: Info, list_id: int) -> TaskListType | None:
         task_list_repo = get_task_list_repository(info)
         db_task_lists = task_list_repo.get_by_id(list_id)
 
