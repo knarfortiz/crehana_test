@@ -7,7 +7,11 @@ session_fixture
 def test_tasks_list(client):
     create_user_query = """
     mutation {
-      createUser(username: "usuario_tasklist", email: "tasklist@test.com", password: "password") {
+      createUser(
+        username: "usuario_tasklist",
+        email: "tasklist@test.com",
+        password: "password"
+      ) {
         id
       }
     }
@@ -74,7 +78,11 @@ def test_tasks_list(client):
 def test_task_list_by_id(client):
     user_query = """
     mutation {
-      createUser(username: "user_test", email: "user@test.com", password: "password") {
+      createUser(
+        username: "user_test",
+        email: "user@test.com",
+        password: "password"
+      ) {
         id
       }
     }

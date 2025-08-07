@@ -41,7 +41,11 @@ def test_tasks_list(client):
 def test_task_list_with_filters(client):
     user_query = """
     mutation {
-      createUser(username: "filtrador", email: "filtrador@test.com", password: "password") {
+      createUser(
+        username: "filtrador",
+        email: "filtrador@test.com",
+        password: "password"
+      ) {
         id
       }
     }
