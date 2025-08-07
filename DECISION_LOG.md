@@ -201,3 +201,18 @@ Este documento registra las decisiones técnicas clave tomadas durante el desarr
 - Se utiliza `FastAPI` + `email.message.EmailMessage` + `smtplib`.
 - El servicio de envío se encapsula dentro de `infrastructure/email/mailer.py`.
 - Se activa después de una autenticación exitosa (`login`).
+
+---
+## 18. ✅ Envío de correos en segundo plano con BackgroundTasks
+
+**Decisión:** Utilizar `BackgroundTasks` de FastAPI para ejecutar el envío del correo de notificación de inicio de sesión en segundo plano.
+
+**Motivación:**
+- Evita bloquear la respuesta de la mutación `login` esperando la operación SMTP.
+- Mejora la experiencia del usuario al hacer el login más rápido.
+- Se integra fácilmente con FastAPI y también funciona con Strawberry GraphQL pasando `background_tasks` por el `context`.
+
+**Implementación:**
+- Se incluyó `background_tasks` en la función `get_context_dependency()` utilizada por `GraphQLRouter`.
+- Dentro de la mutación `login`, se obtiene el objeto con `info.context["background_tasks"]` y se agrega la tarea de envío del correo con `add_task(...)`.
+- El correo se envía de manera asíncrona, luego de que el cliente recibe su token.

@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 import strawberry
+from fastapi import BackgroundTasks
 from strawberry.types import Info
 
 from app.graphql.types.user import UserTokenType, UserType
@@ -41,6 +42,10 @@ class UserMutations:
 
         token = create_access_token(user.username, user.id, timedelta(minutes=15))
 
-        send_login_notification(user.email, user.username)
+        try:
+            background_tasks: BackgroundTasks = info.context["background_tasks"]
+            background_tasks.add_task(send_login_notification, user.email, user.username)
+        except Exception as e:
+            print(f"Error sending login notification: {e}")
 
         return UserTokenType(token=token)
