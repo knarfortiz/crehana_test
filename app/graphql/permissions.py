@@ -10,6 +10,18 @@ class IsAuthenticated(BasePermission):
     message = "Not authenticated"
 
     def has_permission(self, source, info: Info, **kwargs) -> bool:
+        """
+        Checks if the request has a valid Authorization header with a Bearer token
+        that can be decoded to a user ID.
+
+        If the token is valid, the user instance is stored in the context
+        under the key "current_user".
+
+        :param source: The source object (not used)
+        :param info: The GraphQL resolve info
+        :param kwargs: Additional keyword arguments (not used)
+        :return: True if the request is authenticated, False otherwise
+        """
         request = info.context["request"]
         auth_header = request.headers.get("Authorization")
 

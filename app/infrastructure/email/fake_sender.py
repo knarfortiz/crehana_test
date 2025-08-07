@@ -9,6 +9,16 @@ FROM_EMAIL = settings.from_email
 
 
 def send_login_notification(to_email: str, username: str):
+    """
+    Send a login notification to a user by email.
+
+    Args:
+        to_email: The email address of the user.
+        username: The username of the user.
+
+    This function sends an email to the user with a notification of a successful login.
+    It includes text and HTML versions of the message.
+    """
     subject = "🔐 Inicio de sesión exitoso"
 
     plain_text = f"""\

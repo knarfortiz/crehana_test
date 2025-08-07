@@ -16,6 +16,12 @@ from app.graphql.utils import (
 class TaskListQueries:
     @strawberry.field
     def tasks_list(self, info: Info) -> List[TaskListType]:
+        """
+        Gets all task lists.
+
+        :param info: The info object passed down from GraphQL
+        :return: A list of all task lists
+        """
         task_list_repo = get_task_list_repository(info)
         db_task_lists = task_list_repo.get_all()
 
@@ -52,6 +58,14 @@ class TaskListQueries:
 
     @strawberry.field
     def task_list_by_id(self, info: Info, list_id: int) -> TaskListType | None:
+        """
+        Retrieves a task list by its ID.
+
+        :param info: The execution context information.
+        :param list_id: The ID of the task list to retrieve.
+        :return: A TaskListType object containing the details of the task list and its tasks,
+                or None if the task list is not found.
+        """
         task_list_repo = get_task_list_repository(info)
         db_task_lists = task_list_repo.get_by_id(list_id)
 

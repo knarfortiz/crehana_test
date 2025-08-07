@@ -18,9 +18,15 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title=settings.app_name, lifespan=lifespan)
 
 
-async def get_context_dependency(request: Request, background_tasks: BackgroundTasks) -> dict[str, Any]:
+async def get_context_dependency(
+    request: Request, background_tasks: BackgroundTasks
+) -> dict[str, Any]:
     session = next(get_session())
-    return {"request": request, "session": session, "background_tasks": background_tasks}
+    return {
+        "request": request,
+        "session": session,
+        "background_tasks": background_tasks,
+    }
 
 
 graphql_app = GraphQLRouter(schema, context_getter=get_context_dependency)

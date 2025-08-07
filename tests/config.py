@@ -10,6 +10,11 @@ from app.main import app
 
 @pytest.fixture(name="session")
 def session_fixture():
+    """
+    Creates a test sqlite database in memory, and yields a session that can be used to interact with it.
+
+    This fixture is used to provide a test database for integration tests.
+    """
     engine = create_engine(
         "sqlite:///:memory:",
         connect_args={
@@ -25,6 +30,12 @@ def session_fixture():
 
 @pytest.fixture(name="client")
 def client_fixture(session: Session):
+    """
+    Provides a TestClient configured to interact with the GraphQL API of the application.
+
+    This fixture is used to provide a client for integration tests.
+    """
+
     def override_get_session():
         yield session
 

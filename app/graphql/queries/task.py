@@ -13,6 +13,12 @@ from app.graphql.utils import get_task_repository
 class TaskQueries:
     @strawberry.field
     def tasks(self, info: Info) -> List[TaskType]:
+        """
+        Returns all tasks in the database.
+
+        :param info: The execution context information.
+        :return: A list of TaskType objects containing all tasks.
+        """
         task_repo = get_task_repository(info)
 
         db_tasks = task_repo.get_all()
@@ -53,6 +59,15 @@ class TaskQueries:
         status: Optional[TaskStatus] = None,
         priority: Optional[TaskPriority] = None,
     ) -> List[TaskType]:
+        """
+        Returns a list of tasks in the task list with the specified filters.
+
+        :param info: The execution context information.
+        :param list_id: The ID of the task list.
+        :param status: The status of the tasks to filter by. Can be None to match all tasks.
+        :param priority: The priority of the tasks to filter by. Can be None to match all tasks.
+        :return: A list of TaskType objects, filtered by the provided status and priority.
+        """
         task_repo = get_task_repository(info)
         tasks = task_repo.get_by_task_list_with_filters(
             list_id=list_id,
