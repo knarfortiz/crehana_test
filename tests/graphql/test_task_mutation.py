@@ -106,3 +106,36 @@ def test_update_task(client):
     assert updated["isDone"] is True
     assert updated["status"] == "completed"
     assert updated["priority"] == "medium"
+
+
+def test_delete_task(client):
+    create_query = """
+    mutation {
+      createTask(
+        title: "Tarea de prueba"
+        description: "Hecha desde test"
+        priority: high
+        taskListId: 1
+        assignedToId: 1
+      ) {
+        id
+        title
+        description
+        priority
+        status
+        isDone
+      }
+    }
+    """
+
+    create_response = client.post("", json={"query": create_query})
+    task_id = create_response.json()["data"]["createTask"]["id"]
+
+    delete_query = f"""
+    mutation {{
+      deleteTask(id: {task_id})
+    }}
+    """
+    delete_response = client.post("", json={"query": delete_query})
+    assert delete_response.status_code == 200
+    assert delete_response.json()["data"]["deleteTask"] is True
