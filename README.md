@@ -13,6 +13,7 @@ El objetivo de esta evaluación es construir una API RESTful para un sistema de 
 - Implementar validaciones, autenticación y buenas prácticas.
 - Escribir pruebas automatizadas.
 - Documentar código, endpoints y decisiones técnicas.
+- Uso de **Docker Compose** para un entorno reproducible y portable.
 
 ## Estructura del Proyecto
 
@@ -23,7 +24,7 @@ El objetivo de esta evaluación es construir una API RESTful para un sistema de 
   - **graphql/**: Esquemas y resolvers GraphQL
   - **infrastructure/**: Integraciones externas (auth, db, email)
 - **tests/**: Pruebas automatizadas
-- **Makefile**: Comandos para gestión de infraestructura con Terraform (usando Docker)
+- **Makefile**: Comandos para gestión de infraestructura con Docker Compose.
 - **pyproject.toml**: Dependencias y configuración de Python
 
 ## Requisitos
@@ -34,35 +35,35 @@ El objetivo de esta evaluación es construir una API RESTful para un sistema de 
 
 ## Instalación y Despliegue
 
-La gestión de la infraestructura y el despliegue se realiza mediante el `Makefile`, que utiliza Docker y Terraform de forma transparente.
+La aplicación y sus dependencias (incluido Mailhog) se levantan usando **Docker Compose** a través del `Makefile`.
 
 ### Comandos principales
 
-- Inicializar Terraform:
+- Construir y levantar el entorno:
   ```sh
-  make init
+  make up
   ```
-- Validar archivos de infraestructura:
+- Detener y limpiar los contenedores:
   ```sh
-  make validate
+  make down
   ```
-- Planificar cambios de infraestructura:
+- Ver logs de la aplicación:
   ```sh
-  make plan
+  make logs
   ```
-- Aplicar cambios (desplegar):
+- Reiniciar el entorno:
   ```sh
-  make apply
+  make restart
   ```
-- Destruir infraestructura:
+- Listar contenedores activos:
   ```sh
-  make destroy
+  make ps
   ```
-- Limpiar archivos temporales:
+- Limpiar imágenes y volúmenes:
   ```sh
   make clean
   ```
-- Ver ayuda de comandos disponibles:
+- Ayuda de comandos:
   ```sh
   make help
   ```
@@ -94,7 +95,6 @@ Para instalar el administrador de paquetes `uv`:
 - SQLModel
 - Strawberry GraphQL
 - Docker
-- Terraform
 
 ## Pruebas
 

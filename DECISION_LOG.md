@@ -36,7 +36,7 @@ Este documento registra las decisiones técnicas clave tomadas durante el desarr
   - **graphql/**: Esquemas y resolvers GraphQL
   - **infrastructure/**: Integraciones externas (auth, db, email)
 - **tests/**: Pruebas automatizadas
-- **Makefile**: Comandos para gestión de infraestructura con Terraform (usando Docker)
+- **Makefile**: Comandos para gestión de infraestructura con Docker Compose
 - **pyproject.toml**: Dependencias y configuración de Python
 
 ---
@@ -156,47 +156,42 @@ Este documento registra las decisiones técnicas clave tomadas durante el desarr
 
 ---
 
-## 13. ✅ Gestión de infraestructura con Makefile + Terraform + Docker
+## 13. ✅ Gestión de infraestructura con Docker Compose
 
-**Decisión:** Usar un `Makefile` que encapsula comandos de Terraform dentro de contenedores Docker.
+**Decisión:** Usar Docker Compose para levantar todos los servicios del proyecto (FastAPI, Mailhog) de forma reproducible.
 
 **Motivación:**
-- Evita depender de instalaciones locales de Terraform.
-- Reproducible y portable en cualquier sistema con Docker.
-- Mejora la DX al reducir errores por versiones o configuración local.
+- Evita instalaciones manuales y dependencias en la máquina del desarrollador.
+- Permite correr toda la aplicación (API, correo, red interna) con un solo comando (`make up`).
+- Facilita el uso en CI/CD y la colaboración en equipo.
+
+**Implementación:**
+- `docker-compose.yml` define:
+  - **fastapi_app**: Contenedor principal con FastAPI.
+  - **mailhog**: Servidor SMTP para pruebas de correo.
+  - **app_network**: Red interna para comunicación entre contenedores.
+- `Makefile` encapsula comandos comunes (`up`, `down`, `logs`, `clean`).
 
 ---
 
-## 14. ✅ Uso de `terraform plan -out` para despliegues controlados
+## 14. ✅ Limpieza y reinicio del entorno con Makefile
 
-**Decisión:** Utilizar `terraform plan -out=plan.tfplan` y `terraform apply plan.tfplan` para garantizar consistencia.
+**Decisión:** Agregar comandos `make clean` y `make restart` para simplificar el manejo del entorno Docker.
 
 **Motivación:**
-- Asegura que el plan ejecutado sea exactamente el que se revisó.
-- Elimina advertencias innecesarias al aplicar.
-- Buena práctica especialmente útil para ambientes productivos o CI/CD.
+- Permite reiniciar la infraestructura sin residuos.
+- Mejora la experiencia del desarrollador y reduce fricciones.
 
 ---
 
-## 15. ✅ Limpieza del entorno con `make clean`
-
-**Decisión:** Agregar el comando `make clean` para eliminar archivos temporales como `plan.tfplan`.
-
-**Motivación:**
-- Evita archivos residuales en el repo o directorio de trabajo.
-- Mejora la higiene del entorno local.
-- Facilita reiniciar despliegues sin residuos del anterior.
-
----
-## 16. ✅ Envío de notificación de inicio de sesión por correo con Mailhog
+## 15. ✅ Envío de notificación de inicio de sesión por correo con Mailhog
 
 **Decisión:** Utilizar Mailhog como servidor SMTP local para capturar y verificar correos durante el desarrollo. El correo se enviará como una notificación de inicio de sesión exitosa.
 
 **Motivación:**
-- Mailhog permite ver correos sin necesidad de servicios externos (Gmail, Mailgun, etc.).
+- Mailhog permite ver correos sin necesidad de servicios externos.
 - Ideal para ambientes de desarrollo y pruebas.
 - Permite testear contenido, estructura y disparadores de correos.
-- Mejora la experiencia del usuario al recibir confirmación de acceso.
 
 **Implementación:**
 - Se utiliza `FastAPI` + `email.message.EmailMessage` + `smtplib`.
@@ -204,36 +199,33 @@ Este documento registra las decisiones técnicas clave tomadas durante el desarr
 - Se activa después de una autenticación exitosa (`login`).
 
 ---
-## 18. ✅ Envío de correos en segundo plano con BackgroundTasks
 
-**Decisión:** Utilizar `BackgroundTasks` de FastAPI para ejecutar el envío del correo de notificación de inicio de sesión en segundo plano.
+## 16. ✅ Envío de correos en segundo plano con BackgroundTasks
+
+**Decisión:** Utilizar `BackgroundTasks` de FastAPI para ejecutar el envío del correo de notificación en segundo plano.
 
 **Motivación:**
-- Evita bloquear la respuesta de la mutación `login` esperando la operación SMTP.
-- Mejora la experiencia del usuario al hacer el login más rápido.
-- Se integra fácilmente con FastAPI y también funciona con Strawberry GraphQL pasando `background_tasks` por el `context`.
-
-**Implementación:**
-- Se incluyó `background_tasks` en la función `get_context_dependency()` utilizada por `GraphQLRouter`.
-- Dentro de la mutación `login`, se obtiene el objeto con `info.context["background_tasks"]` y se agrega la tarea de envío del correo con `add_task(...)`.
-- El correo se envía de manera asíncrona, luego de que el cliente recibe su token.
+- Evita bloquear la respuesta de la mutación `login`.
+- Mejora la experiencia del usuario.
+- Integración directa con Strawberry pasando `background_tasks` por el `context`.
 
 ---
-## 19. ✅ Uso de variables de entorno para configuración
+
+## 17. ✅ Uso de variables de entorno para configuración
 
 **Decisión:** Centralizar la configuración sensible y contextual del proyecto utilizando variables de entorno, gestionadas mediante `pydantic.BaseSettings`.
 
 **Motivación:**
-- Evita hardcodear valores sensibles (como claves secretas o direcciones de servidor).
-- Facilita la portabilidad entre entornos (desarrollo, testing, producción).
-- Se integra de forma natural con Docker, Terraform y herramientas de despliegue.
-- Mejora la seguridad, mantenibilidad y limpieza del código.
+- Evita hardcodear valores sensibles.
+- Facilita portabilidad entre entornos.
+- Integración natural con Docker Compose y CI/CD.
+- Mejora seguridad y mantenibilidad.
 
-**Variables empleadas destacadas:**
-- `SMTP_HOST`, `SMTP_PORT`, `FROM_EMAIL`: Configuración del servidor de correos.
-- `SECRET_KEY`, `ALGORITHM`, `ACCESS_TOKEN_EXPIRE_MINUTES`: Configuración de tokens JWT.
-- `DEBUG_DB`: Permite activar el modo de debug en base de datos.
+**Variables empleadas:**
+- `SMTP_HOST`, `SMTP_PORT`, `FROM_EMAIL`: Configuración del servidor SMTP.
+- `SECRET_KEY`, `ALGORITHM`, `ACCESS_TOKEN_EXPIRE_MINUTES`: Configuración JWT.
+- `DEBUG_DB`: Activación de debug en base de datos.
 
 **Extras:**
-- Se provee un archivo `.env.example` para facilitar la reproducción del entorno.
-- En los tests, se aseguran las variables necesarias directamente vía código, evitando dependencia directa del `.env`.
+- `.env.example` incluido.
+- Tests configuran las variables necesarias internamente.

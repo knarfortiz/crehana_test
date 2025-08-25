@@ -1,37 +1,35 @@
-TERRAFORM_IMAGE=hashicorp/terraform:latest
-WORKDIR=/workspace
-DOCKER_SOCK=/var/run/docker.sock
-PLAN_FILE=plan.tfplan
+DOCKER_COMPOSE_FILE=docker-compose.yml
 
-COMMAND=docker run --rm -it \
-	-v $(PWD):$(WORKDIR) \
-	-v $(DOCKER_SOCK):$(DOCKER_SOCK) \
-	-w $(WORKDIR) \
-	$(TERRAFORM_IMAGE)
+up:
+	@echo "🚀 Starting services with Docker Compose..."
+	docker compose -f $(DOCKER_COMPOSE_FILE) up --build -d
 
-init:
-	$(COMMAND) init
+down:
+	@echo "🛑 Stopping and removing services..."
+	docker compose -f $(DOCKER_COMPOSE_FILE) down
 
-validate:
-	$(COMMAND) validate
+logs:
+	@echo "📜 Showing logs..."
+	docker compose -f $(DOCKER_COMPOSE_FILE) logs -f
 
-plan:
-	$(COMMAND) plan -out=$(PLAN_FILE)
+restart:
+	@echo "🔄 Restarting services..."
+	docker compose -f $(DOCKER_COMPOSE_FILE) down
+	docker compose -f $(DOCKER_COMPOSE_FILE) up --build -d
 
-apply:
-	$(COMMAND) apply $(PLAN_FILE)
-
-destroy:
-	$(COMMAND) destroy $(ARGS)
+ps:
+	@echo "📦 Listing active containers..."
+	docker compose -f $(DOCKER_COMPOSE_FILE) ps
 
 clean:
-	@echo "🧹 Limpiando archivos temporales..."
-	@rm -f $(PLAN_FILE)
+	@echo "🧹 Removing containers, images, and volumes..."
+	docker compose -f $(DOCKER_COMPOSE_FILE) down --rmi all --volumes --remove-orphans
 
 help:
-	@echo "init       Inicializa Terraform"
-	@echo "validate   Valida los archivos .tf"
-	@echo "plan       Genera el plan y lo guarda en $(PLAN_FILE)"
-	@echo "apply      Aplica el plan guardado"
-	@echo "destroy    Elimina la infraestructura (usa ARGS=-auto-approve opcional)"
-	@echo "clean      Elimina archivos temporales (como el plan)"
+	@echo "Available commands:"
+	@echo "  make up        - Start services in detached mode"
+	@echo "  make down      - Stop and remove services"
+	@echo "  make logs      - Show logs in real-time"
+	@echo "  make restart   - Restart services"
+	@echo "  make ps        - List running containers"
+	@echo "  make clean     - Remove everything (containers, images, and volumes)"
